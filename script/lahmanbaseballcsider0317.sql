@@ -11,11 +11,16 @@ SELECT
     p.namefirst,
     p.namelast,
     p.height,
-    team.name
-    p.playerid
+    t.name,
+    p.playerid,
+    a.g_all
  FROM people AS p
-  WHERE playerid='gaedeed01'
- GROUP BY p.namefirst, p.namelast, p.playerid
+ LEFT JOIN appearances as a
+ ON p.playerid=a.playerid
+ LEFT JOIN teams as t
+ ON a.teamid=t.teamid
+  WHERE p.playerid='gaedeed01'
+ GROUP BY p.namefirst, p.namelast, p.playerid, a.g_all, t.name
  ORDER BY p.height
     
     
