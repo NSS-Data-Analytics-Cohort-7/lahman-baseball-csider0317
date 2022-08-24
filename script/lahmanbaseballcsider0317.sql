@@ -23,4 +23,29 @@ SELECT
  GROUP BY p.namefirst, p.namelast, p.playerid, a.g_all, t.name
  ORDER BY p.height
     
-    
+3. Find all players in the database who played at Vanderbilt University. Create a list showing each player’s first and last names as well as the total salary they earned in the major leagues. Sort this list in descending order by the total salary earned. Which Vanderbilt player earned the most money in the majors?    
+
+--just looking at the table
+SELECT *
+FROM schools
+WHERE schoolstate='TN'
+
+
+SELECT
+    p.namefirst,
+    p.namelast,
+    cp.schoolid,
+    SUM(s.salary) 
+FROM people as p
+LEFT JOIN collegeplaying AS cp
+    on p.playerid=cp.playerid
+LEFT JOIN salaries as s
+ON cp.playerid=s.playerid
+WHERE schoolid='vandy'
+group by  p.namefirst,
+    p.namelast,
+    cp.schoolid
+HAVING SUM(s.salary)IS NOT NULL
+order by SUM(s.salary)  DESC
+
+
