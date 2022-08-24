@@ -35,7 +35,7 @@ SELECT
     p.namefirst,
     p.namelast,
     cp.schoolid,
-    SUM(s.salary) 
+    CAST(CAST(SUM(s.salary) AS NUMERIC) AS MONEY)
 FROM people as p
 LEFT JOIN collegeplaying AS cp
     on p.playerid=cp.playerid
@@ -46,6 +46,8 @@ group by  p.namefirst,
     p.namelast,
     cp.schoolid
 HAVING SUM(s.salary)IS NOT NULL
-order by SUM(s.salary)  DESC
+order by CAST(CAST(SUM(s.salary) AS NUMERIC) AS MONEY) DESC
+
+4. Using the fielding table, group players into three groups based on their position: label players with position OF as "Outfield", those with position "SS", "1B", "2B", and "3B" as "Infield", and those with position "P" or "C" as "Battery". Determine the number of putouts made by each of these three groups in 2016.
 
 
