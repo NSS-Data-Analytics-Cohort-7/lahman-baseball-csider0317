@@ -205,6 +205,37 @@ from ( select
                  as     pecentage_ws_wins_max_game
                 FROM wswin
            
-   
+  8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance. 
 
+-- homegames table
+--team bame looks like teamid
+--park char vary ex BOS01  year is 1871-05-16 games integer att intger  where games >10
 
+SELECT * from homegames
+LIMIT 25
+
+-- top 5
+SELECT 
+ 
+    team, 
+    park, 
+     sum(attendance)/games as avg_attendance
+FROM homegames
+WHERE year='2016' and games>=10
+GROUP BY team, park, games
+order by avg_attendance DESC
+LIMIT 5
+
+--bottom 5
+SELECT 
+ 
+    team, 
+    park, 
+     sum(attendance)/games as avg_attendance
+FROM homegames
+WHERE year='2016' and games>=10
+GROUP BY team, park, games
+order by avg_attendance 
+LIMIT 5
+
+9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
