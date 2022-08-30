@@ -201,9 +201,11 @@ from ( select
                 SUM(CASE WHEN wswin = 'Y' THEN 1 ELSE 0 END) as win,
                 SUM(case when wswin = 'N' THEN 1 ELSE 0 END) as loss                     FROM maxw)
                 SELECT 
-                CAST(win as numeric)/46*100
-                 as     pecentage_ws_wins_max_game
+                count(*) as total_games,
+                round(CAST(win as numeric),2)/46*100 as    pecentage_ws_wins_max_game     
                 FROM wswin
+                group by win
+                
            
   8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance. 
 
@@ -225,7 +227,6 @@ WHERE year='2016' and games>=10
 GROUP BY team, park, games
 order by avg_attendance DESC
 LIMIT 5
-
 --bottom 5
 SELECT 
  
@@ -239,3 +240,24 @@ order by avg_attendance
 LIMIT 5
 
 9. Which managers have won the TSN Manager of the Year award in both the National League (NL) and the American League (AL)? Give their full name and the teams that they were managing when they won the award.
+
+--awardsmanager table 
+--managers table 
+
+SELECT
+    awardid, 
+    playerid, 
+    lgid
+    from awardsmanagers
+    WHERE awardid LIKE '%TSN%' AND 
+    group by playerid, lgid, awardid
+
+
+
+
+
+
+
+   
+
+
