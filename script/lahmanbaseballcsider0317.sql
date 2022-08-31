@@ -201,7 +201,7 @@ from ( select
                 SUM(CASE WHEN wswin = 'Y' THEN 1 ELSE 0 END) as win,
                 SUM(case when wswin = 'N' THEN 1 ELSE 0 END) as loss                     FROM maxw)
                 SELECT 
-                count(*) as total_games,
+                
                 round(CAST(win as numeric),2)/46*100 as    pecentage_ws_wins_max_game     
                 FROM wswin
                 group by win
@@ -244,14 +244,38 @@ LIMIT 5
 --awardsmanager table 
 --managers table 
 
-SELECT
-    awardid, 
-    playerid, 
-    lgid
-    from awardsmanagers
-    WHERE awardid LIKE '%TSN%' AND 
-    group by playerid, lgid, awardid
-
+-- SELECT
+--     awardid, 
+--     playerid, 
+--     lgid,
+--     from awardsmanagers
+--     WHERE awardid LIKE '%TSN%' and lgid='NL'
+--     group by playerid, awardid, lgid
+    
+   WITH manager as(SELECT
+   playerid,
+    awardid,
+       lgid,
+        CASE WHEN lgid='AL' then 1 else 0 
+     END AS al_wins,
+     CASE WHEN lgid='NL' then 1 else 0
+     END AS nl_wins
+FROM awardsmanagers
+    WHERE awardid LIKE '%TSN%' 
+    group by playerid, awardid, lgid)
+    SELECT 
+    manager.playerid, 
+    manager.al_wins, 
+    manager.nl_wins
+    from manager
+    GROUP BY manager.playerid, manager.al_wins, manager.nl_wins
+    ORDER BY playerid 
+    
+    
+    
+    --WHERE manager.al_wins>0 AND manager.nl_wins>0
+          
+    
 
 
 
