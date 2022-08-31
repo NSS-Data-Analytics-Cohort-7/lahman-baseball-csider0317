@@ -278,14 +278,18 @@ tw.playerid
 FROM tw
 where tw.alwin>0 and tw.nlwin>0
     
-   
- 10. Find all players who hit their career highest number of home runs in 2016. Consider only players who have played in the league for at least 10 years, and who hit at least one home run in 2016. Report the players' first and last names and the number of home runs they hit in 2016.   
+    
+    SELECT 
+    playerid, 
+    yearid, 
+    awardid, 
+    lgid
+    FROM awardsmanagers
+    WHERE playerid='johnsda02'
+     
     
     
-   
-    
-    
--- 2 CTE join them 
+-- 2 CTE join them   messing with 9
 
 WITH al as(SELECT 
  *
@@ -300,9 +304,46 @@ WITH al as(SELECT
       on al.playerid=nl.playerid
        where lgid IN ('AL', 'NL')
           
+ 10. Find all players who hit their career highest number of home runs in 2016. Consider only players who have played in the league for at least 10 years, and who hit at least one home run in 2016. Report the playersfirst and last names and the number of home runs they hit in 2016.       
+
+
+--this may be a good use for group by cube 
+SELECT
+playerid, 
+yearid, 
+SUM(hr)
+FROM batting 
+WHERE yearid=2016
+GROUP BY 
+    GROUPING SETS  (
+    
+    (playerid),
+    (yearid),
+    ())
     
 
-
+SELECT
+    yearid, 
+    SUM(hr) as total_homeruns
+    FROM batting
+        group by yearid
+        order by total_homeruns desc
+        
+        with b_year as (SELECT 
+        playerid, 
+        yearid, 
+        sum(hr) as total_homeruns, 
+        yearid-6 as best_year
+        from batting
+        where yearid in ('2000','2016')
+        GROUP by playerid, yearid
+        order by total_homeruns desc)
+        SELECT playerid, 
+        total_homeruns, 
+        best_year
+        FROM b_year
+        where best_year=2016
+       
 
 
 
