@@ -185,6 +185,7 @@ WITH mwins as
   
          
  --percentage of most wins that also won the WS 21.73
+ -- look at 1981
  
  
  WITH wswin as            
@@ -252,31 +253,49 @@ LIMIT 5
 --     WHERE awardid LIKE '%TSN%' and lgid='NL'
 --     group by playerid, awardid, lgid
     
-   WITH manager as(SELECT
+   WITH tw as(WITH manager as(SELECT
    playerid,
     awardid,
-       lgid,
+          lgid,
         CASE WHEN lgid='AL' then 1 else 0 
      END AS al_wins,
      CASE WHEN lgid='NL' then 1 else 0
      END AS nl_wins
 FROM awardsmanagers
     WHERE awardid LIKE '%TSN%' 
-    group by playerid, awardid, lgid)
+    group by playerid, lgid, awardid) 
     SELECT 
     manager.playerid, 
-    manager.al_wins, 
-    manager.nl_wins
-    from manager
-    GROUP BY manager.playerid, manager.al_wins, manager.nl_wins
-    ORDER BY playerid 
+       SUM(manager.al_wins), 
+    sum(manager.nl_wins)
+    FROM manager
+    WHERE lgid IN ('AL','NL')
+    group by manager.playerid
+    order by playerid)
+    SELECT
+   
     
     
     
-    --WHERE manager.al_wins>0 AND manager.nl_wins>0
+   
+    
+    
+-- 2 CTE join them 
+
+WITH al as(SELECT 
+ *
+ FROM awardsmanagers
+ WHERE lgid='AL' and awardid LIKE '%TSN%'),
+ nl as(SELECT *
+       FROM awardsmanagers
+       where lgid='NL' and awardid LIKE '%TSN%')
+       SELECT *
+       FROM al
+      LEFT JOIN nl
+      on al.playerid=nl.playerid
+       where lgid IN ('AL', 'NL')
           
     
-
 
 
 
