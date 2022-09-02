@@ -306,47 +306,48 @@ WITH al as(SELECT
           
  10. Find all players who hit their career highest number of home runs in 2016. Consider only players who have played in the league for at least 10 years, and who hit at least one home run in 2016. Report the playersfirst and last names and the number of home runs they hit in 2016.       
 
-
---this may be a good use for group by cube 
-SELECT
-playerid, 
-yearid, 
-SUM(hr)
-FROM batting 
-WHERE yearid=2016
-GROUP BY 
-    GROUPING SETS  (
-    
-    (playerid),
-    (yearid),
-    ())
-    
-
-SELECT
-    yearid, 
-    SUM(hr) as total_homeruns
+ 
+ SELECT *
+FROM
+(
+    SELECT
+        playerid,
+        yearid,
+        hr,
+        MAX(hr) OVER (PARTITION BY yearid) AS year_best_hr
     FROM batting
-        group by yearid
-        order by total_homeruns desc
+)as home_runs
+WHERE hr = year_best_hr and yearid between '2000' AND '2016'
+
+
+select *
+FROM
+(
+    SELECT
+        b.playerid,
+        b.yearid,
         
-        with b_year as (SELECT 
-        playerid, 
-        yearid, 
-        sum(hr) as total_homeruns, 
-        yearid-6 as best_year
-        from batting
-        where yearid in ('2000','2016')
-        GROUP by playerid, yearid
-        order by total_homeruns desc)
-        SELECT playerid, 
-        total_homeruns, 
-        best_year
-        FROM b_year
-        where best_year=2016
-       
+      p.finalgame::date-p.debut::date AS days_played
+ , 
+        p.finalgame,
+        b.hr,
+       SUM(b.hr) OVER (PARTITION BY b.playerid) AS year_best_hr
+    FROM batting as b
+    LEFT JOIN people as p
+    on b.playerid=p.playerid
+)as home_runs
+WHERE hr = year_best_hr and yearid between '2000' AND '2016'
+ORDER BY year_best_hr desc
 
 
 
-   
+
+
+
+SELECT
+debut
+year(debut)
+from people
+
 
 
