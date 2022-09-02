@@ -256,6 +256,7 @@ LIMIT 5
    WITH tw as(WITH manager as(SELECT
    playerid,
     awardid,
+    
           lgid,
         CASE WHEN lgid='AL' then 1 else 0 
      END AS al_wins,
@@ -266,6 +267,7 @@ FROM awardsmanagers
     group by playerid, lgid, awardid) 
     SELECT 
     manager.playerid, 
+             
        SUM(manager.al_wins)as alwin, 
     sum(manager.nl_wins)as nlwin
     FROM manager
@@ -273,36 +275,16 @@ FROM awardsmanagers
     group by manager.playerid
     order by playerid)
     SELECT
+    tw.playerid
+       FROM tw
+       WHERE alwin>0 AND nlwin>0
+    
+   
+    
 
-tw.playerid 
-FROM tw
-where tw.alwin>0 and tw.nlwin>0
-    
-    
-    SELECT 
-    playerid, 
-    yearid, 
-    awardid, 
-    lgid
-    FROM awardsmanagers
-    WHERE playerid='johnsda02'
-     
-    
-    
--- 2 CTE join them   messing with 9
 
-WITH al as(SELECT 
- *
- FROM awardsmanagers
- WHERE lgid='AL' and awardid LIKE '%TSN%'),
- nl as(SELECT *
-       FROM awardsmanagers
-       where lgid='NL' and awardid LIKE '%TSN%')
-       SELECT *
-       FROM al
-      LEFT JOIN nl
-      on al.playerid=nl.playerid
-       where lgid IN ('AL', 'NL')
+    
+
           
  10. Find all players who hit their career highest number of home runs in 2016. Consider only players who have played in the league for at least 10 years, and who hit at least one home run in 2016. Report the playersfirst and last names and the number of home runs they hit in 2016.       
 
@@ -319,8 +301,8 @@ FROM
 )as home_runs
 WHERE hr = year_best_hr and yearid between '2000' AND '2016'
 
-
-select *
+with top_hr as
+(select *
 FROM
 (
     SELECT
@@ -328,26 +310,43 @@ FROM
         b.yearid,
         
       p.finalgame::date-p.debut::date AS days_played
- , 
+ ,      p.debut,
         p.finalgame,
         b.hr,
-       SUM(b.hr) OVER (PARTITION BY b.playerid) AS year_best_hr
+       SUM(b.hr) OVER (PARTITION BY b.playerid order by yearid) AS year_best_hr
     FROM batting as b
     LEFT JOIN people as p
     on b.playerid=p.playerid
 )as home_runs
-WHERE hr = year_best_hr and yearid between '2000' AND '2016'
-ORDER BY year_best_hr desc
-
-
-
-
-
-
+WHERE hr = year_best_hr and yearid between '2006' AND '2016' 
+ORDER BY year_best_hr desc)
 SELECT
-debut
-year(debut)
-from people
+top_hr.playerid, 
+top_hr, yearid,
+top_hr.days_played
+FROM top_hr
+WHERE top_hr.yearid=2016
+
+SELECT 
+playerid, 
+yearid, 
+hr
+from batting
+where playerid='longoev01'
+
+
+11. Is there any correlation between number of wins and team salary? Use data from 2000 and later to answer this question. As you do this analysis, keep in mind that salaries across the whole league tend to increase together, so you may want to look on a year-by-year basis.
+
+
+SELECT 
+t.teamid,
+t.w,
+t.yearid,
+s.salary
+from teams as t
+LEFT JOIN salaries as s
+on t.teamid=s.teamid and t.yearid=s.yearid
+
 
 
 
